@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betta Macro Studio | Studio by Mr Safi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="camera-app">
+        <header class="studio-header">
+            <h1>BETTA MACRO STUDIO</h1>
+            <p class="creator-sub">Studio by Mr Safi</p>
+        </header>
+
+        <!-- Camera Viewfinder Card -->
+        <section class="viewfinder-card">
+            <div class="screen-frame" id="screenFrame">
+                <!-- Rule of Thirds Grid Overlay -->
+                <div class="grid-overlay">
+                    <span></span><span></span>
+                </div>
+
+                <!-- Generated Betta Image -->
+                <img id="bettaPreview" src="" alt="Betta Fish Macro Preview" class="hidden">
+
+                <!-- Initial / Loading Placeholder -->
+                <div id="placeholderState" class="placeholder-box">
+                    <div class="focus-bracket"></div>
+                    <p id="statusLabel">READY TO CAPTURE • TAP GENERATE</p>
+                </div>
+
+                <!-- Camera HUD Telemetry -->
+                <div class="hud-bottom">
+                    <span>ISO 100 • 1/250s</span>
+                    <span id="aspectHud">9:16 RAW</span>
+                </div>
+            </div>
+
+            <div class="lens-bar">
+                <span class="lens-specs">100mm Macro • f/2.8 • 8K RAW</span>
+                <span id="recDot" class="rec-dot" title="Studio Ready"></span>
+            </div>
+        </section>
+
+        <!-- Camera Parameter Controls -->
+        <section class="controls-panel">
+            <div class="control-row">
+                <label for="varietySelect">Betta Variety</label>
+                <select id="varietySelect">
+                    <option value="Halfmoon Betta fish with 180-degree symmetrical flowing silk tail">Halfmoon (180° Tail)</option>
+                    <option value="Crowntail Betta fish with dramatic spiky ray-extended fins">Crowntail (Spiky Rays)</option>
+                    <option value="Giant Plakat Betta fish with muscular short-fin warrior posture">Plakat (Short-Fin)</option>
+                    <option value="Galaxy Koi Betta fish with marbled iridescent scales">Galaxy Koi</option>
+                    <option value="Dumbo Big Ear Betta fish with massive translucent white pectoral fins">Dumbo Ear</option>
+                    <option value="Alien Hybrid Betta fish with metallic green-blue dragon scales">Alien Metallic</option>
+                </select>
+            </div>
+
+            <div class="control-row">
+                <label for="colorSelect">Color Morph</label>
+                <select id="colorSelect">
+                    <option value="iridescent royal blue body with vibrant mustard yellow fins">Mustard Gas (Blue &amp; Gold)</option>
+                    <option value="velvet matte black body with metallic silver platinum dragon scales">Samurai Black &amp; Silver</option>
+                    <option value="deep crimson blood-red translucent fins with copper metallic sheen">Crimson Copper Red</option>
+                    <option value="pearl white platinum body with glowing cyan bioluminescent edges">Platinum Cyan Glow</option>
+                    <option value="multicolor koi orange, black, white, and electric turquoise patches">Candy Koi Marbled</option>
+                </select>
+            </div>
+
+            <div class="control-row">
+                <label for="lightingSelect">Studio Lighting</label>
+                <select id="lightingSelect">
+                    <option value="pure pitch-black obsidian studio backdrop, dramatic rim lighting highlighting delicate fin membranes">Obsidian Black Studio</option>
+                    <option value="dark moody underwater aquascape background with subtle volumetric light rays and micro bubbles">Deep Aquarium Rays</option>
+                    <option value="ultra-clean backlit macro studio lighting showing translucent vein details inside fins">Translucent Backlit X-Ray</option>
+                </select>
+            </div>
+
+            <div class="control-row">
+                <label for="ratioSelect">Frame Ratio</label>
+                <select id="ratioSelect" onchange="updateAspectLabel()">
+                    <option value="9:16">9:16 Vertical (Reels / Shorts / Wallpaper)</option>
+                    <option value="1:1">1:1 Square (Instagram / Anatomy Card)</option>
+                    <option value="4:5">4:5 Portrait (Poster Print)</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Shutter & Action Bar -->
+        <div class="shutter-bar">
+            <button id="copyPromptBtn" class="icon-btn" onclick="copyMotionPrompt()" title="Copy Video Animation Prompt">
+                📋 Motion Prompt
+            </button>
+
+            <button id="generateBtn" class="shutter-btn" onclick="generateBettaPhoto()">
+                GENERATE
+            </button>
+
+            <button id="downloadBtn" class="icon-btn" onclick="downloadBettaImage()" title="Save HD Image">
+                ⬇️ Save HD
+            </button>
+        </div>
+
+        <footer class="studio-footer">
+            Optical AI Engine • Engineered by <strong>Mr Safi</strong>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
