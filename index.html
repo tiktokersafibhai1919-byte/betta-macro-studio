@@ -1,383 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Betta Macro Studio | Studio by Mr Safi</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body {
-            background: #eaedf2;
-            color: #111827;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            padding: 16px 14px 28px;
-        }
-        .camera-app { max-width: 460px; margin: 0 auto; }
-        .studio-header { text-align: center; margin-bottom: 14px; }
-        .studio-header h1 { font-size: 1.35rem; font-weight: 800; letter-spacing: 1.4px; color: #0f172a; }
-        .creator-sub { font-size: 0.84rem; font-weight: 600; color: #64748b; margin-top: 2px; }
-
-        .api-card {
-            background: #fff;
-            border-radius: 14px;
-            padding: 10px 12px;
-            border: 1px solid #dce1e9;
-            margin-bottom: 12px;
-        }
-        .api-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .api-top span { font-size: 0.78rem; font-weight: 700; color: #1e293b; }
-        .key-badge {
-            font-size: 0.7rem; font-weight: 700; padding: 2px 8px;
-            border-radius: 99px; background: #fee2e2; color: #b91c1c;
-        }
-        .key-badge.active { background: #dcfce7; color: #15803d; }
-        .api-input-row { display: flex; gap: 6px; }
-        .api-input-row input {
-            flex: 1; border: 1px solid #cbd5e1; border-radius: 8px;
-            padding: 8px 10px; font-size: 0.82rem; background: #f8fafc; outline: none;
-        }
-        .save-key-btn {
-            background: #0f172a; color: #fff; border: none; border-radius: 8px;
-            padding: 8px 14px; font-size: 0.8rem; font-weight: 700; cursor: pointer;
-        }
-        .save-key-btn.saved { background: #16a34a; }
-
-        .viewfinder-card {
-            background: #fff; border-radius: 18px; padding: 10px 10px 12px;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-            border: 1px solid #dce1e9; margin-bottom: 14px;
-        }
-        .screen-frame {
-            position: relative; width: 100%; aspect-ratio: 9 / 16;
-            background: #07090d; border-radius: 12px; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .screen-frame.ratio-1-1 { aspect-ratio: 1 / 1; }
-        .screen-frame.ratio-4-5 { aspect-ratio: 4 / 5; }
-        .grid-overlay {
-            position: absolute; inset: 0; pointer-events: none; z-index: 3;
-            background-image:
-                linear-gradient(to right, rgba(255,255,255,0.18) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255,255,255,0.18) 1px, transparent 1px);
-            background-size: 33.333% 33.333%;
-        }
-        #bettaPreview { width: 100%; height: 100%; object-fit: cover; display: block; z-index: 2; }
-        .hidden { display: none !important; }
-        .placeholder-box { text-align: center; color: #94a3b8; z-index: 2; padding: 20px; }
-        .focus-bracket {
-            width: 56px; height: 56px; margin: 0 auto 12px;
-            border: 1.5px solid rgba(255,255,255,0.45); border-radius: 8px; position: relative;
-        }
-        .focus-bracket::after {
-            content: "+"; position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); color: rgba(255,255,255,0.65); font-size: 1.1rem;
-        }
-        #statusLabel { font-family: monospace; font-size: 0.74rem; color: #cbd5e1; line-height: 1.4; }
-        .hud-bottom {
-            position: absolute; bottom: 10px; left: 12px; right: 12px;
-            display: flex; justify-content: space-between; font-family: monospace;
-            font-size: 0.72rem; color: rgba(255,255,255,0.88);
-            text-shadow: 0 1px 4px rgba(0,0,0,0.95); z-index: 4; pointer-events: none;
-        }
-        .lens-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 6px 2px; }
-        .lens-specs { font-size: 0.8rem; font-weight: 700; color: #1e293b; }
-        .rec-dot { width: 11px; height: 11px; border-radius: 50%; background: #ef4444; }
-        .rec-dot.pulsing { animation: pulseRec 0.7s infinite alternate; }
-        @keyframes pulseRec { from { opacity: 1; } to { opacity: 0.25; } }
-
-        .controls-panel {
-            background: #fff; border-radius: 16px; border: 1px solid #dce1e9;
-            overflow: hidden; margin-bottom: 16px;
-        }
-        .control-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 14px; border-bottom: 1px solid #eef1f6; gap: 10px;
-        }
-        .control-row label { font-size: 0.85rem; font-weight: 600; color: #1e293b; }
-        .control-row select {
-            flex: 1; max-width: 62%; border: none; background: #f1f5f9; color: #0f172a;
-            font-size: 0.82rem; font-weight: 600; padding: 8px 10px; border-radius: 8px; text-align: right;
-        }
-        .prompt-box-row { padding: 12px 14px; background: #f8fafc; }
-        .prompt-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .prompt-header label { font-size: 0.84rem; font-weight: 700; color: #0f172a; }
-        .clear-prompt-btn { background: none; border: none; color: #2563eb; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
-        #customPromptInput {
-            width: 100%; border: 1px solid #cbd5e1; background: #fff; color: #0f172a;
-            border-radius: 10px; padding: 10px; font-family: inherit; font-size: 0.84rem; resize: vertical;
-        }
-        .shutter-bar { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-        .shutter-btn {
-            flex: 1.4; background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
-            color: #fff; border: none; border-radius: 999px; padding: 14px 18px;
-            font-size: 0.92rem; font-weight: 700; letter-spacing: 1px; cursor: pointer;
-        }
-        .shutter-btn:disabled { opacity: 0.6; }
-        .icon-btn {
-            flex: 1; background: #fff; color: #1e293b; border: 1px solid #cbd5e1;
-            border-radius: 999px; padding: 12px 8px; font-size: 0.76rem; font-weight: 700; cursor: pointer;
-        }
-        .studio-footer { text-align: center; margin-top: 18px; font-size: 0.78rem; color: #64748b; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Betta Macro Studio | Studio by Mr Safi</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:#eaedf2;color:#111827;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;padding:16px 14px 28px}
+.app{max-width:460px;margin:0 auto}
+header{text-align:center;margin-bottom:14px}
+header h1{font-size:1.35rem;font-weight:800;letter-spacing:1.4px;color:#0f172a}
+header p{font-size:.84rem;font-weight:600;color:#64748b;margin-top:2px}
+.card{background:#fff;border-radius:16px;padding:11px 12px;border:1px solid #dce1e9;margin-bottom:12px;box-shadow:0 6px 18px rgba(15,23,42,.05)}
+.api-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-size:.78rem;font-weight:700}
+.badge{font-size:.7rem;padding:2px 8px;border-radius:99px;background:#fee2e2;color:#b91c1c}
+.badge.ok{background:#dcfce7;color:#15803d}
+.row-in{display:flex;gap:6px}
+.row-in input{flex:1;border:1px solid #cbd5e1;border-radius:8px;padding:8px 10px;font-size:.82rem;background:#f8fafc;outline:none}
+.btn-dark{background:#0f172a;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:.8rem;font-weight:700;cursor:pointer}
+.btn-dark.ok{background:#16a34a}
+.screen{position:relative;width:100%;aspect-ratio:9/16;background:#07090d;border-radius:12px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.screen.r1{aspect-ratio:1/1}.screen.r4{aspect-ratio:4/5}
+.grid{position:absolute;inset:0;pointer-events:none;z-index:3;background-image:linear-gradient(to right,rgba(255,255,255,.18) 1px,transparent 1px),linear-gradient(to bottom,rgba(255,255,255,.18) 1px,transparent 1px);background-size:33.33% 33.33%}
+#pic{width:100%;height:100%;object-fit:cover;z-index:2}
+.hide{display:none!important}
+.ph{text-align:center;color:#cbd5e1;z-index:2;padding:18px;font-family:monospace;font-size:.75rem}
+.box{width:54px;height:54px;margin:0 auto 10px;border:1.5px solid rgba(255,255,255,.45);border-radius:8px}
+.hud{position:absolute;bottom:10px;left:12px;right:12px;display:flex;justify-content:space-between;font-family:monospace;font-size:.72rem;color:#fff;text-shadow:0 1px 4px #000;z-index:4}
+.lens{display:flex;justify-content:space-between;align-items:center;padding:9px 4px 2px;font-size:.8rem;font-weight:700}
+.dot{width:11px;height:11px;border-radius:50%;background:#ef4444}
+.dot.pulse{animation:p .7s infinite alternate}@keyframes p{from{opacity:1}to{opacity:.25}}
+.ctrl{display:flex;justify-content:space-between;align-items:center;padding:10px 2px;border-bottom:1px solid #eef1f6;gap:8px}
+.ctrl label{font-size:.84rem;font-weight:600}
+.ctrl select{flex:1;max-width:62%;border:none;background:#f1f5f9;color:#0f172a;font-size:.81rem;font-weight:600;padding:8px;border-radius:8px;text-align:right}
+.pbox{padding-top:10px}
+.phead{display:flex;justify-content:space-between;font-size:.82rem;font-weight:700;margin-bottom:6px}
+.phead button{background:none;border:none;color:#2563eb;font-weight:700;cursor:pointer}
+textarea{width:100%;border:1px solid #cbd5e1;border-radius:10px;padding:9px;font-family:inherit;font-size:.83rem}
+.bar{display:flex;gap:8px;margin-top:4px}
+.go{flex:1.4;background:#2563eb;color:#fff;border:none;border-radius:99px;padding:14px;font-size:.92rem;font-weight:700;letter-spacing:1px;cursor:pointer}
+.go:disabled{opacity:.6}
+.sub{flex:1;background:#fff;color:#1e293b;border:1px solid #cbd5e1;border-radius:99px;padding:12px 8px;font-size:.76rem;font-weight:700;cursor:pointer}
+footer{text-align:center;margin-top:16px;font-size:.78rem;color:#64748b}
+</style>
 </head>
 <body>
-    <div class="camera-app">
-        <header class="studio-header">
-            <h1>BETTA MACRO STUDIO</h1>
-            <p class="creator-sub">Studio by Mr Safi</p>
-        </header>
+<div class="app">
+<header><h1>BETTA MACRO STUDIO</h1><p>Studio by Mr Safi</p></header>
 
-        <section class="api-card">
-            <div class="api-top">
-                <span>FLUX.1 Engine Token</span>
-                <span id="keyStatusBadge" class="key-badge">KEY REQUIRED</span>
-            </div>
-            <div class="api-input-row">
-                <input type="text" id="apiKeyInput" placeholder="Paste hf_... token here">
-                <button type="button" id="saveKeyBtn" class="save-key-btn" onclick="saveApiKey()">Save Key</button>
-            </div>
-        </section>
+<div class="card">
+<div class="api-top"><span>FLUX.1 Engine Token</span><span id="badge" class="badge">KEY REQUIRED</span></div>
+<div class="row-in">
+<input type="text" id="keyIn" placeholder="Paste hf_... token here">
+<button type="button" id="saveBtn" class="btn-dark" onclick="saveKey()">Save Key</button>
+</div>
+</div>
 
-        <section class="viewfinder-card">
-            <div class="screen-frame" id="screenFrame">
-                <div class="grid-overlay"></div>
-                <img id="bettaPreview" src="" alt="Preview" class="hidden">
-                <div id="placeholderState" class="placeholder-box">
-                    <div class="focus-bracket"></div>
-                    <p id="statusLabel">PASTE TOKEN &amp; TAP GENERATE</p>
-                </div>
-                <div class="hud-bottom">
-                    <span>FLUX.1 • 100mm f/2.8</span>
-                    <span id="aspectHud">9:16 RAW</span>
-                </div>
-            </div>
-            <div class="lens-bar">
-                <span class="lens-specs" id="lensModeLabel">Betta Splendens Macro • 8K RAW</span>
-                <span id="recDot" class="rec-dot"></span>
-            </div>
-        </section>
+<div class="card">
+<div class="screen" id="scr">
+<div class="grid"></div>
+<img id="pic" class="hide" alt="Betta">
+<div id="ph" class="ph"><div class="box"></div><div id="st">PASTE TOKEN &amp; TAP GENERATE</div></div>
+<div class="hud"><span>FLUX.1 • 100mm f/2.8</span><span id="hudR">9:16 RAW</span></div>
+</div>
+<div class="lens"><span id="modeTxt">Betta Splendens Macro • 8K RAW</span><span id="dot" class="dot"></span></div>
+</div>
 
-        <section class="controls-panel">
-            <div class="control-row">
-                <label for="varietySelect">Betta Variety</label>
-                <select id="varietySelect">
-                    <option value="slender Siamese fighting fish (Betta splendens) Halfmoon male with a huge 180-degree symmetrical flowing silk tail fin">Halfmoon (180° Tail)</option>
-                    <option value="slender Siamese fighting fish (Betta splendens) Crowntail male with dramatic spiky needle-like ray-extended fins">Crowntail (Spiky Rays)</option>
-                    <option value="muscular short-fin Plakat Siamese fighting fish (Betta splendens) flaring its gill beard">Plakat (Short-Fin)</option>
-                    <option value="slender Galaxy Koi Siamese fighting fish (Betta splendens) with marbled iridescent metallic scales and flowing veil fins">Galaxy Koi</option>
-                    <option value="slender Dumbo Big Ear Siamese fighting fish (Betta splendens) with oversized ruffled white pectoral fins and long flowing tail">Dumbo Ear</option>
-                    <option value="slender Alien Hybrid Siamese fighting fish (Betta splendens) with iridescent metallic green-blue dragon scales">Alien Metallic</option>
-                </select>
-            </div>
+<div class="card">
+<div class="ctrl"><label>Betta Variety</label><select id="vSel">
+<option value="slender Siamese fighting fish (Betta splendens) Halfmoon male with huge 180-degree symmetrical flowing silk tail fin">Halfmoon (180° Tail)</option>
+<option value="slender Siamese fighting fish (Betta splendens) Crowntail male with spiky needle-like ray-extended fins">Crowntail (Spiky Rays)</option>
+<option value="muscular short-fin Plakat Siamese fighting fish (Betta splendens) flaring gill beard">Plakat (Short-Fin)</option>
+<option value="slender Galaxy Koi Siamese fighting fish (Betta splendens) with marbled iridescent metallic scales">Galaxy Koi</option>
+<option value="slender Dumbo Big Ear Siamese fighting fish (Betta splendens) with oversized ruffled white pectoral fins">Dumbo Ear</option>
+<option value="slender Alien Hybrid Siamese fighting fish (Betta splendens) with metallic green-blue dragon scales">Alien Metallic</option>
+</select></div>
+<div class="ctrl"><label>Color Morph</label><select id="cSel">
+<option value="iridescent royal blue slender body with vibrant mustard yellow-gold silk fins">Mustard Gas (Blue &amp; Gold)</option>
+<option value="velvet matte black body with metallic silver platinum dragon scales">Samurai Black &amp; Silver</option>
+<option value="deep crimson blood-red translucent veil fins with copper sheen">Crimson Copper Red</option>
+<option value="pearl white platinum body with glowing cyan bioluminescent fin edges">Platinum Cyan Glow</option>
+<option value="multicolor koi orange, black, white, and electric turquoise marbled patches">Candy Koi Marbled</option>
+</select></div>
+<div class="ctrl"><label>Lighting</label><select id="lSel">
+<option value="isolated against a pure pitch-black obsidian studio backdrop, dramatic rim lighting">Obsidian Black Studio</option>
+<option value="dark moody underwater aquascape background with volumetric light rays and micro bubbles">Deep Aquarium Rays</option>
+<option value="ultra-clean backlit macro studio lighting showing translucent fin veins">Translucent Backlit</option>
+</select></div>
+<div class="ctrl"><label>Frame Ratio</label><select id="rSel" onchange="setRatio()">
+<option value="9:16">9:16 Vertical (Reels)</option>
+<option value="1:1">1:1 Square (Instagram)</option>
+<option value="4:5">4:5 Portrait (Poster)</option>
+</select></div>
+<div class="pbox">
+<div class="phead"><span>Custom Prompt (Optional)</span><button type="button" onclick="clrP()">Clear</button></div>
+<textarea id="cIn" rows="2" oninput="chkM()" placeholder="Leave empty for Betta presets, or type any scene..."></textarea>
+</div>
+</div>
 
-            <div class="control-row">
-                <label for="colorSelect">Color Morph</label>
-                <select id="colorSelect">
-                    <option value="iridescent royal blue slender body with vibrant mustard yellow-gold silk fins">Mustard Gas (Blue &amp; Gold)</option>
-                    <option value="velvet matte black body with metallic silver platinum dragon scales">Samurai Black &amp; Silver</option>
-                    <option value="deep crimson blood-red translucent veil fins with copper metallic sheen">Crimson Copper Red</option>
-                    <option value="pearl white platinum body with glowing cyan bioluminescent fin edges">Platinum Cyan Glow</option>
-                    <option value="multicolor koi orange, black, white, and electric turquoise marbled patches">Candy Koi Marbled</option>
-                </select>
-            </div>
+<div class="bar">
+<button type="button" id="cpBtn" class="sub" onclick="cpMot()">📋 Motion</button>
+<button type="button" id="goBtn" class="go" onclick="runGen()">GENERATE</button>
+<button type="button" class="sub" onclick="dlImg()">⬇️ Save HD</button>
+</div>
+<footer>FLUX.1 Neural Engine • Engineered by <strong>Mr Safi</strong></footer>
+</div>
 
-            <div class="control-row">
-                <label for="lightingSelect">Studio Lighting</label>
-                <select id="lightingSelect">
-                    <option value="isolated against a pure pitch-black obsidian studio backdrop, dramatic rim lighting illuminating delicate fin membranes">Obsidian Black Studio</option>
-                    <option value="dark moody underwater aquascape background with subtle volumetric light rays and tiny rising micro bubbles">Deep Aquarium Rays</option>
-                    <option value="ultra-clean backlit macro studio lighting showing translucent vein structure inside the flowing fins">Translucent Backlit X-Ray</option>
-                </select>
-            </div>
-
-            <div class="control-row">
-                <label for="ratioSelect">Frame Ratio</label>
-                <select id="ratioSelect" onchange="updateAspectLabel()">
-                    <option value="9:16">9:16 Vertical (Reels)</option>
-                    <option value="1:1">1:1 Square (Instagram)</option>
-                    <option value="4:5">4:5 Portrait (Poster)</option>
-                </select>
-            </div>
-
-            <div class="prompt-box-row">
-                <div class="prompt-header">
-                    <label for="customPromptInput">Custom Prompt (Optional)</label>
-                    <button type="button" class="clear-prompt-btn" onclick="clearCustomPrompt()">Clear</button>
-                </div>
-                <textarea id="customPromptInput" rows="2" oninput="updateModeIndicator()" placeholder="Leave empty for Betta presets, or type any custom scene..."></textarea>
-            </div>
-        </section>
-
-        <div class="shutter-bar">
-            <button type="button" id="copyPromptBtn" class="icon-btn" onclick="copyMotionPrompt()">📋 Motion</button>
-            <button type="button" id="generateBtn" class="shutter-btn" onclick="generateBettaPhoto()">GENERATE</button>
-            <button type="button" id="downloadBtn" class="icon-btn" onclick="downloadBettaImage()">⬇️ Save HD</button>
-        </div>
-
-        <footer class="studio-footer">FLUX.1 Neural Engine • Engineered by <strong>Mr Safi</strong></footer>
-    </div>
-
-    <script>
-        let currentBlobUrl = "";
-
-        function getStoredKey() {
-            try { return localStorage.getItem("betta_studio_api_key") || ""; } catch (e) { return ""; }
-        }
-
-        function setStoredKey(val) {
-            try { localStorage.setItem("betta_studio_api_key", val); } catch (e) {}
-        }
-
-        function markKeyActive(active) {
-            const badge = document.getElementById("keyStatusBadge");
-            const saveBtn = document.getElementById("saveKeyBtn");
-            if (active) {
-                badge.innerText = "KEY READY";
-                badge.classList.add("active");
-                saveBtn.innerText = "Saved ✓";
-                saveBtn.classList.add("saved");
-            } else {
-                badge.innerText = "KEY REQUIRED";
-                badge.classList.remove("active");
-                saveBtn.innerText = "Save Key";
-                saveBtn.classList.remove("saved");
-            }
-        }
-
-        function saveApiKey() {
-            const input = document.getElementById("apiKeyInput");
-            const val = input.value.trim();
-            if (!val) {
-                alert("Please paste your hf_... token in the box first!");
-                return;
-            }
-            setStoredKey(val);
-            markKeyActive(true);
-            document.getElementById("statusLabel").innerText = "TOKEN READY • TAP GENERATE";
-        }
-
-        window.addEventListener("DOMContentLoaded", function() {
-            const saved = getStoredKey();
-            if (saved) {
-                document.getElementById("apiKeyInput").value = saved;
-                markKeyActive(true);
-                document.getElementById("statusLabel").innerText = "TOKEN READY • TAP GENERATE";
-            }
-        });
-
-        function updateAspectLabel() {
-            const ratio = document.getElementById("ratioSelect").value;
-            const frame = document.getElementById("screenFrame");
-            document.getElementById("aspectHud").innerText = ratio + " RAW";
-            frame.classList.remove("ratio-1-1", "ratio-4-5");
-            if (ratio === "1:1") frame.classList.add("ratio-1-1");
-            if (ratio === "4:5") frame.classList.add("ratio-4-5");
-        }
-
-        function updateModeIndicator() {
-            const hasCustom = document.getElementById("customPromptInput").value.trim().length > 0;
-            document.getElementById("lensModeLabel").innerText = hasCustom
-                ? "Custom Scene Mode • FLUX.1 RAW"
-                : "Betta Splendens Macro • 8K RAW";
-        }
-
-        function clearCustomPrompt() {
-            document.getElementById("customPromptInput").value = "";
-            updateModeIndicator();
-        }
-
-        function buildFinalPrompt() {
-            const custom = document.getElementById("customPromptInput").value.trim();
-            if (custom) return custom + ", ultra-realistic 8K RAW photography, cinematic studio lighting, sharp focus";
-            const variety = document.getElementById("varietySelect").value;
-            const color = document.getElementById("colorSelect").value;
-            const lighting = document.getElementById("lightingSelect").value;
-            return "Award-winning National Geographic macro wildlife photograph of a single " + variety + " with " + color + ", side-profile view suspended gracefully in crystal-clear water, " + lighting + ", razor-sharp focus on glistening iridescent scales, gill plate, and delicate translucent fin rays, shot on 100mm macro lens f/2.8, photorealistic aquatic photography";
-        }
-
-        async function generateBettaPhoto(isRetry) {
-            const token = document.getElementById("apiKeyInput").value.trim() || getStoredKey();
-            if (!token) {
-                alert("Please paste your Hugging Face (hf_...) token at the top first!");
-                return;
-            }
-            setStoredKey(token);
-            markKeyActive(true);
-
-            const btn = document.getElementById("generateBtn");
-            const recDot = document.getElementById("recDot");
-            const previewImg = document.getElementById("bettaPreview");
-            const placeholder = document.getElementById("placeholderState");
-            const statusLabel = document.getElementById("statusLabel");
-            const ratio = document.getElementById("ratioSelect").value;
-
-            let width = 768, height = 1344;
-            if (ratio === "1:1") { width = 1024; height = 1024; }
-            if (ratio === "4:5") { width = 896; height = 1120; }
-
-            btn.disabled = true;
-            btn.innerText = "CAPTURING...";
-            recDot.classList.add("pulsing");
-            previewImg.classList.add("hidden");
-            placeholder.classList.remove("hidden");
-            statusLabel.innerText = isRetry ? "GPU READY • RENDERING 8K BETTA..." : "EXPOSING FLUX.1 MACRO SENSOR...";
-
-            try {
-                const res = await fetch("https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": "Bearer " + token,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        inputs: buildFinalPrompt(),
-                        parameters: { width: width, height: height }
-                    })
-                });
-
-                if (res.status === 503 && !isRetry) {
-                    statusLabel.innerText = "WAKING UP FLUX GPU (8 SECONDS)...";
-                    setTimeout(function() { generateBettaPhoto(true); }, 8000);
-                    return;
-                }
-
-                if (!res.ok) {
-                    const errText = await res.text();
-                    throw new Error("HTTP " + res.status + ": " + errText.slice(0, 80));
-                }
-
-                const blob = await res.blob();
-                if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
-                currentBlobUrl = URL.createObjectURL(blob);
-
-                previewImg.src = currentBlobUrl;
-                placeholder.classList.add("hidden");
-                previewImg.classList.remove("hidden");
-            } catch (err) {
-                statusLabel.innerText = "ERROR: " + err.message;
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "GENERATE";
-                recDot.classList.remove("pulsing");
-            }
-        }
-
-        function downloadBettaImage() {
-            if (!currentBlobUrl) {
-                alert("Please tap GENERATE first!");
-                return;
-            }
-            const a = document.createElement("a");
-            a.href = currentBlobUrl;
-            a.download = "Betta-Macro-MrSafi-" + Date.now() + ".jpg";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        function copyMotionPrompt() {
-            const custom = document.getElementById("customPromptInput").value.trim();
-            const text = custom
-                ? "Cinematic 60fps slow-motion video of " + custom + ", subtle camera push-in, realistic physics, volumetric lighting."
-                : "Ultra slow-motion 60fps underwater macro video of this Betta fish, delicate silk fins rippling gracefully in gentle current, subtle gill breathing, floating micro-bubbles, locked 100mm macro lens.";
-            navigator.clipboard.writeText(text).then(funct
+<script>
+let imgUrl="";
+function saveKey(){
+const k=document.getElementById("keyIn").value.trim();
+if(!k){alert("Paste your hf_... token first!");return;}
+try{localStorage.setItem("hf_betta_k",k);}catch(e){}
+document.getElementById("badge").innerText="KEY READY";
+document.getElementById("badge").classList.add("ok");
+document.getElementById("saveBtn").innerText="Saved ✓";
+document.getElementById("saveBtn").classList.add("ok");
+document.getElementById("st").innerText="KEY SAVED • TAP GENERATE";
+}
+try{const sk=localStorage.getItem("hf_betta_k");if(sk){document.getElementById("keyIn").value=sk;saveKey();}}catch(e){}
+function setRatio(){
+const r=document.getElementById("rSel").value,s=document.getElementById("scr");
+document.getElementById("hudR").innerText=r+" RAW";
+s.className="screen"+(r==="1:1"?" r1":r==="4:5"?" r4":"");
+}
+function chkM(){document.getElementById("modeTxt").innerText=document.getElementById("cIn").value.trim()?"Custom Scene Mode • FLUX.1 RAW":"Betta Splendens Macro • 8K RAW";}
+function clrP(){document.getElementById("cIn").value="";chkM();}
+async function runGen(retry){
+const k=document.getElementById("keyIn").value.trim();
+if(!k){alert("Paste your hf_... token first!");return;}
+saveKey();
+const c=document.getElementById("cIn").value.trim();
+const prompt=c?c+", ultra-realistic 8K RAW photography, cinematic studio lighting":"Award-winning National Geographic macro wildlife photograph of a single "+document.getElementById("vSel").value+" with "+document.getElementById("cSel").value+", side-profile view in crystal-clear water, "+document.getElementById("lSel").value+", razor-sharp scales and translucent fin rays, 100mm macro f/2.8";
+const go=document.getElementById("goBtn"),st=document.getElementById("st"),dot=document.getElementById("dot");
+go.disabled=true;go.innerText="CAPTURING...";dot.classList.add("pulse");
+document.getElementById("pic").classList.add("hide");document.getElementById("ph").classList.remove("hide");
+st.innerText=retry?"GPU READY • RENDERING 8K BETTA...":"EXPOSING FLUX.1 SENSOR...";
+try{
+const res=await fetch("https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell",{
+method:"POST",headers:{"Authorization":"Bearer "+k,"Content-Type":"application/json"},
+body:JSON.stringify({inputs:prompt})
+});
+if(res.status===503&&!retry){st.innerText="WAKING GPU (8s)...";setTimeout(()=>runGen(true),8000);return;}
+if(!res.ok){const t=await res.text();throw new Error("HTTP "+res.status+" "+t.slice(0,60));}
+const blob=await res.blob();
+if(imgUrl)URL.revokeObjectURL(imgUrl);
+imgUrl=URL.createObjectURL(blob);
+document.getElementById("pic").src=imgUrl;
+document.getElementById("ph").classList.add("hide");document.getElementById("pic").classList.remove("hide");
+}catch(e){st.innerText="ERROR: "+e.message;}
+finally{go.disabled=false;go.innerText="GENERATE";dot.classList.remove("pulse");}
+}
+function dlImg(){if(!imgUrl){alert("Generate an image first!");return;}const a=document.createElement("a");a.href=imgUrl;a.download="Betta-MrSafi-"+Date.now()+".jpg";a.click();}
+function cpMot(){navigator.clipboard.writeText("Ultra slow-motion 60fps underwater macro video of this Betta fish, delicate silk fins rippling gracefully, floating micro-bubbles, 100mm macro lens.").then(()=>{const b=document.getElementById("cpBtn");b.innerText="✅ Copied!";setTimeout(()=>b.innerText="📋 Motion",1500);});}
+</script>
+</body>
+    </html>
