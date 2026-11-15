@@ -4,7 +4,314 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Betta Macro Studio | Studio by Mr Safi</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #eaedf2;
+            color: #111827;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 18px 14px 28px;
+            line-height: 1.4;
+        }
+
+        .camera-app {
+            max-width: 460px;
+            margin: 0 auto;
+        }
+
+        .studio-header {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .studio-header h1 {
+            font-size: 1.38rem;
+            font-weight: 800;
+            letter-spacing: 1.4px;
+            color: #0f172a;
+        }
+
+        .creator-sub {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #64748b;
+            margin-top: 2px;
+        }
+
+        .viewfinder-card {
+            background-color: #ffffff;
+            border-radius: 18px;
+            padding: 10px 10px 12px;
+            box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+            border: 1px solid #dce1e9;
+            margin-bottom: 14px;
+        }
+
+        .screen-frame {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            background-color: #07090d;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .screen-frame.ratio-9-16 {
+            aspect-ratio: 9 / 16;
+        }
+
+        .screen-frame.ratio-1-1 {
+            aspect-ratio: 1 / 1;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 3;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+            background-size: 33.333% 33.333%;
+        }
+
+        #bettaPreview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            z-index: 2;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .placeholder-box {
+            text-align: center;
+            color: #94a3b8;
+            z-index: 2;
+            padding: 20px;
+        }
+
+        .focus-bracket {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 12px;
+            border: 1.5px solid rgba(255, 255, 255, 0.45);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .focus-bracket::after {
+            content: "+";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 1.1rem;
+        }
+
+        #statusLabel {
+            font-family: 'Courier New', monospace;
+            font-size: 0.74rem;
+            letter-spacing: 0.8px;
+            color: #cbd5e1;
+        }
+
+        .hud-bottom {
+            position: absolute;
+            bottom: 10px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Courier New', monospace;
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.88);
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .lens-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 6px 2px;
+        }
+
+        .lens-specs {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .rec-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            background-color: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+        }
+
+        .rec-dot.pulsing {
+            animation: pulseRec 0.7s infinite alternate;
+        }
+
+        @keyframes pulseRec {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0.3; transform: scale(0.8); }
+        }
+
+        .controls-panel {
+            background-color: #ffffff;
+            border-radius: 16px;
+            border: 1px solid #dce1e9;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .control-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 14px;
+            border-bottom: 1px solid #eef1f6;
+            gap: 10px;
+        }
+
+        .control-row:last-child {
+            border-bottom: none;
+        }
+
+        .control-row label {
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: #1e293b;
+            white-space: nowrap;
+        }
+
+        .control-row select {
+            flex: 1;
+            max-width: 62%;
+            border: none;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 8px 10px;
+            border-radius: 8px;
+            text-align: right;
+            outline: none;
+        }
+
+        /* Custom Prompt Box Section */
+        .prompt-box-row {
+            padding: 12px 14px;
+            background-color: #f8fafc;
+        }
+
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .prompt-header label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .clear-prompt-btn {
+            background: none;
+            border: none;
+            color: #2563eb;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 2px 6px;
+        }
+
+        #customPromptInput {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            background-color: #ffffff;
+            color: #0f172a;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: inherit;
+            font-size: 0.84rem;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #customPromptInput:focus {
+            border-color: #2563eb;
+        }
+
+        .shutter-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .shutter-btn {
+            flex: 1.4;
+            background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 999px;
+            padding: 14px 18px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.32);
+        }
+
+        .shutter-btn:disabled {
+            opacity: 0.65;
+        }
+
+        .icon-btn {
+            flex: 1;
+            background-color: #ffffff;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
+            border-radius: 999px;
+            padding: 12px 8px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .studio-footer {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 0.78rem;
+            color: #64748b;
+        }
+
+        .studio-footer strong {
+            color: #0f172a;
+        }
+    </style>
 </head>
 <body>
     <div class="camera-app">
@@ -13,24 +320,16 @@
             <p class="creator-sub">Studio by Mr Safi</p>
         </header>
 
-        <!-- Camera Viewfinder Card -->
         <section class="viewfinder-card">
-            <div class="screen-frame" id="screenFrame">
-                <!-- Rule of Thirds Grid Overlay -->
-                <div class="grid-overlay">
-                    <span></span><span></span>
-                </div>
+            <div class="screen-frame ratio-9-16" id="screenFrame">
+                <div class="grid-overlay"></div>
+                <img id="bettaPreview" src="" alt="Studio Preview" class="hidden">
 
-                <!-- Generated Betta Image -->
-                <img id="bettaPreview" src="" alt="Betta Fish Macro Preview" class="hidden">
-
-                <!-- Initial / Loading Placeholder -->
                 <div id="placeholderState" class="placeholder-box">
                     <div class="focus-bracket"></div>
                     <p id="statusLabel">READY TO CAPTURE • TAP GENERATE</p>
                 </div>
 
-                <!-- Camera HUD Telemetry -->
                 <div class="hud-bottom">
                     <span>ISO 100 • 1/250s</span>
                     <span id="aspectHud">9:16 RAW</span>
@@ -38,12 +337,11 @@
             </div>
 
             <div class="lens-bar">
-                <span class="lens-specs">100mm Macro • f/2.8 • 8K RAW</span>
-                <span id="recDot" class="rec-dot" title="Studio Ready"></span>
+                <span class="lens-specs" id="lensModeLabel">100mm Macro • f/2.8 • 8K RAW</span>
+                <span id="recDot" class="rec-dot"></span>
             </div>
         </section>
 
-        <!-- Camera Parameter Controls -->
         <section class="controls-panel">
             <div class="control-row">
                 <label for="varietySelect">Betta Variety</label>
@@ -80,26 +378,26 @@
             <div class="control-row">
                 <label for="ratioSelect">Frame Ratio</label>
                 <select id="ratioSelect" onchange="updateAspectLabel()">
-                    <option value="9:16">9:16 Vertical (Reels / Shorts / Wallpaper)</option>
-                    <option value="1:1">1:1 Square (Instagram / Anatomy Card)</option>
-                    <option value="4:5">4:5 Portrait (Poster Print)</option>
+                    <option value="9:16">9:16 Vertical (Reels / Wallpaper)</option>
+                    <option value="1:1">1:1 Square (Instagram)</option>
+                    <option value="4:5">4:5 Portrait (Poster)</option>
                 </select>
+            </div>
+
+            <!-- Custom Prompt Override Box -->
+            <div class="prompt-box-row">
+                <div class="prompt-header">
+                    <label for="customPromptInput">Custom Prompt (Optional — Any Scene)</label>
+                    <button type="button" class="clear-prompt-btn" onclick="clearCustomPrompt()">Clear</button>
+                </div>
+                <textarea id="customPromptInput" rows="2" oninput="updateModeIndicator()" placeholder="Leave empty for Betta presets, or describe any image you want to create..."></textarea>
             </div>
         </section>
 
-        <!-- Shutter & Action Bar -->
         <div class="shutter-bar">
-            <button id="copyPromptBtn" class="icon-btn" onclick="copyMotionPrompt()" title="Copy Video Animation Prompt">
-                📋 Motion Prompt
-            </button>
-
-            <button id="generateBtn" class="shutter-btn" onclick="generateBettaPhoto()">
-                GENERATE
-            </button>
-
-            <button id="downloadBtn" class="icon-btn" onclick="downloadBettaImage()" title="Save HD Image">
-                ⬇️ Save HD
-            </button>
+            <button id="copyPromptBtn" class="icon-btn" onclick="copyMotionPrompt()">📋 Motion</button>
+            <button id="generateBtn" class="shutter-btn" onclick="generateBettaPhoto()">GENERATE</button>
+            <button id="downloadBtn" class="icon-btn" onclick="downloadBettaImage()">⬇️ Save HD</button>
         </div>
 
         <footer class="studio-footer">
@@ -107,6 +405,148 @@
         </footer>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        let currentImageUrl = "";
+
+        function updateAspectLabel() {
+            const ratio = document.getElementById("ratioSelect").value;
+            const hud = document.getElementById("aspectHud");
+            const frame = document.getElementById("screenFrame");
+
+            hud.innerText = `${ratio} RAW`;
+            frame.classList.remove("ratio-9-16", "ratio-1-1");
+
+            if (ratio === "9:16") frame.classList.add("ratio-9-16");
+            else if (ratio === "1:1") frame.classList.add("ratio-1-1");
+        }
+
+        function updateModeIndicator() {
+            const customVal = document.getElementById("customPromptInput").value.trim();
+            const lensLabel = document.getElementById("lensModeLabel");
+            if (customVal.length > 0) {
+                lensLabel.innerText = "Custom Prompt Mode • 8K RAW";
+            } else {
+                lensLabel.innerText = "100mm Macro • f/2.8 • 8K RAW";
+            }
+        }
+
+        function clearCustomPrompt() {
+            document.getElementById("customPromptInput").value = "";
+            updateModeIndicator();
+        }
+
+        function buildFinalPrompt() {
+            const customPrompt = document.getElementById("customPromptInput").value.trim();
+            if (customPrompt.length > 0) {
+                return `${customPrompt}, ultra-realistic 8K RAW photography, cinematic lighting, sharp focus, no text, no watermark`;
+            }
+
+            const variety = document.getElementById("varietySelect").value;
+            const color = document.getElementById("colorSelect").value;
+            const lighting = document.getElementById("lightingSelect").value;
+
+            return `Ultra-realistic National Geographic macro studio photograph of a single ${variety} with ${color}, suspended gracefully in crystal-clear water, ${lighting}, razor-sharp focus on glistening iridescent scales, gill plate, and delicate translucent fin rays, shot on 100mm macro lens f/2.8, 8K RAW photography, natural aquatic physics, no text, no watermark`;
+        }
+
+        function getDimensions(ratio) {
+            if (ratio === "9:16") return { width: 768, height: 1344 };
+            if (ratio === "1:1") return { width: 1024, height: 1024 };
+            return { width: 896, height: 1120 };
+        }
+
+        function generateBettaPhoto() {
+            const btn = document.getElementById("generateBtn");
+            const recDot = document.getElementById("recDot");
+            const previewImg = document.getElementById("bettaPreview");
+            const placeholder = document.getElementById("placeholderState");
+            const statusLabel = document.getElementById("statusLabel");
+            const ratio = document.getElementById("ratioSelect").value;
+
+            const prompt = buildFinalPrompt();
+            const { width, height } = getDimensions(ratio);
+            const seed = Math.floor(Math.random() * 9999999);
+
+            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&nologo=true&model=flux`;
+
+            btn.disabled = true;
+            btn.innerText = "CAPTURING...";
+            recDot.classList.add("pulsing");
+            previewImg.classList.add("hidden");
+            placeholder.classList.remove("hidden");
+            statusLabel.innerText = "EXPOSING 8K SENSOR • PLEASE WAIT...";
+
+            const loader = new Image();
+            loader.onload = () => {
+                currentImageUrl = imageUrl;
+                previewImg.src = imageUrl;
+                placeholder.classList.add("hidden");
+                previewImg.classList.remove("hidden");
+
+                btn.disabled = false;
+                btn.innerText = "GENERATE";
+                recDot.classList.remove("pulsing");
+            };
+
+            loader.onerror = () => {
+                statusLabel.innerText = "SIGNAL BUSY • TAP GENERATE TO RETRY";
+                btn.disabled = false;
+                btn.innerText = "GENERATE";
+                recDot.classList.remove("pulsing");
+            };
+
+            loader.src = imageUrl;
+        }
+
+        async function downloadBettaImage() {
+            if (!currentImageUrl) {
+                alert("Please tap GENERATE first to capture an image!");
+                return;
+            }
+
+            const downloadBtn = document.getElementById("downloadBtn");
+            const originalText = downloadBtn.innerText;
+            downloadBtn.innerText = "⏳ Saving...";
+
+            try {
+                const response = await fetch(currentImageUrl);
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+
+                const link = document.createElement("a");
+                link.href = blobUrl;
+                link.download = `Studio-MrSafi-${Date.now()}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(blobUrl);
+            } catch (err) {
+                window.open(currentImageUrl, "_blank");
+            } finally {
+                downloadBtn.innerText = originalText;
+            }
+        }
+
+        function copyMotionPrompt() {
+            const customPrompt = document.getElementById("customPromptInput").value.trim();
+            let motionPrompt = "";
+
+            if (customPrompt.length > 0) {
+                motionPrompt = `Cinematic 60fps slow-motion video of ${customPrompt}, subtle camera push-in, realistic physics, volumetric lighting, photorealistic detail.`;
+            } else {
+                const varietyText = document.getElementById("varietySelect").selectedOptions[0].text;
+                const colorText = document.getElementById("colorSelect").selectedOptions[0].text;
+                motionPrompt = `Ultra slow-motion 60fps underwater macro video of this ${varietyText} (${colorText}), delicate silk fins rippling gracefully in gentle current, subtle gill breathing movement, floating micro-bubbles drifting upward, locked 100mm macro camera, cinematic rim lighting, photorealistic aquatic physics.`;
+            }
+
+            navigator.clipboard.writeText(motionPrompt).then(() => {
+                const copyBtn = document.getElementById("copyPromptBtn");
+                const oldText = copyBtn.innerText;
+                copyBtn.innerText = "✅ Copied!";
+                setTimeout(() => {
+                    copyBtn.innerText = oldText;
+                }, 1600);
+            });
+        }
+    </script>
 </body>
-</html>
+                    </html>
