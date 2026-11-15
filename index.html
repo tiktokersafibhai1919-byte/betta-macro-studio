@@ -27,7 +27,7 @@
 
         .studio-header {
             text-align: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
 
         .studio-header h1 {
@@ -44,6 +44,70 @@
             margin-top: 2px;
         }
 
+        /* API Key Bar */
+        .api-card {
+            background-color: #ffffff;
+            border-radius: 14px;
+            padding: 10px 12px;
+            border: 1px solid #dce1e9;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+
+        .api-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .api-top span {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .key-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 99px;
+            background-color: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .key-badge.active {
+            background-color: #dcfce7;
+            color: #15803d;
+        }
+
+        .api-input-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .api-input-row input {
+            flex: 1;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 7px 10px;
+            font-size: 0.8rem;
+            background-color: #f8fafc;
+            outline: none;
+        }
+
+        .save-key-btn {
+            background-color: #0f172a;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 7px 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Viewfinder */
         .viewfinder-card {
             background-color: #ffffff;
             border-radius: 18px;
@@ -79,8 +143,8 @@
             pointer-events: none;
             z-index: 3;
             background-image:
-                linear-gradient(to right, rgba(255, 255, 255, 0.2) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 1px, transparent 1px);
+                linear-gradient(to right, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.18) 1px, transparent 1px);
             background-size: 33.333% 33.333%;
         }
 
@@ -125,7 +189,7 @@
         #statusLabel {
             font-family: 'Courier New', monospace;
             font-size: 0.74rem;
-            letter-spacing: 0.8px;
+            letter-spacing: 0.6px;
             color: #cbd5e1;
         }
 
@@ -152,7 +216,7 @@
         }
 
         .lens-specs {
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 700;
             color: #1e293b;
         }
@@ -174,6 +238,7 @@
             to { opacity: 0.3; transform: scale(0.8); }
         }
 
+        /* Controls */
         .controls-panel {
             background-color: #ffffff;
             border-radius: 16px;
@@ -190,10 +255,6 @@
             padding: 12px 14px;
             border-bottom: 1px solid #eef1f6;
             gap: 10px;
-        }
-
-        .control-row:last-child {
-            border-bottom: none;
         }
 
         .control-row label {
@@ -217,7 +278,6 @@
             outline: none;
         }
 
-        /* Custom Prompt Box Section */
         .prompt-box-row {
             padding: 12px 14px;
             background-color: #f8fafc;
@@ -257,7 +317,6 @@
             font-size: 0.84rem;
             resize: vertical;
             outline: none;
-            transition: border-color 0.2s;
         }
 
         #customPromptInput:focus {
@@ -320,6 +379,19 @@
             <p class="creator-sub">Studio by Mr Safi</p>
         </header>
 
+        <!-- API Key Connector -->
+        <section class="api-card">
+            <div class="api-top">
+                <span>FLUX.1 Optical Engine Token</span>
+                <span id="keyStatusBadge" class="key-badge">KEY REQUIRED</span>
+            </div>
+            <div class="api-input-row">
+                <input type="password" id="apiKeyInput" placeholder="Paste free hf_... token here">
+                <button type="button" class="save-key-btn" onclick="saveApiKey()">Save Key</button>
+            </div>
+        </section>
+
+        <!-- Camera Viewfinder -->
         <section class="viewfinder-card">
             <div class="screen-frame ratio-9-16" id="screenFrame">
                 <div class="grid-overlay"></div>
@@ -327,51 +399,52 @@
 
                 <div id="placeholderState" class="placeholder-box">
                     <div class="focus-bracket"></div>
-                    <p id="statusLabel">READY TO CAPTURE • TAP GENERATE</p>
+                    <p id="statusLabel">PASTE FREE KEY &amp; TAP GENERATE</p>
                 </div>
 
                 <div class="hud-bottom">
-                    <span>ISO 100 • 1/250s</span>
+                    <span>FLUX.1 • 100mm f/2.8</span>
                     <span id="aspectHud">9:16 RAW</span>
                 </div>
             </div>
 
             <div class="lens-bar">
-                <span class="lens-specs" id="lensModeLabel">100mm Macro • f/2.8 • 8K RAW</span>
+                <span class="lens-specs" id="lensModeLabel">Betta Splendens Macro • No Watermark</span>
                 <span id="recDot" class="rec-dot"></span>
             </div>
         </section>
 
+        <!-- Controls -->
         <section class="controls-panel">
             <div class="control-row">
                 <label for="varietySelect">Betta Variety</label>
                 <select id="varietySelect">
-                    <option value="Halfmoon Betta fish with 180-degree symmetrical flowing silk tail">Halfmoon (180° Tail)</option>
-                    <option value="Crowntail Betta fish with dramatic spiky ray-extended fins">Crowntail (Spiky Rays)</option>
-                    <option value="Giant Plakat Betta fish with muscular short-fin warrior posture">Plakat (Short-Fin)</option>
-                    <option value="Galaxy Koi Betta fish with marbled iridescent scales">Galaxy Koi</option>
-                    <option value="Dumbo Big Ear Betta fish with massive translucent white pectoral fins">Dumbo Ear</option>
-                    <option value="Alien Hybrid Betta fish with metallic green-blue dragon scales">Alien Metallic</option>
+                    <option value="slender Siamese fighting fish (Betta splendens) Halfmoon male with a huge 180-degree symmetrical D-shaped flowing silk tail fin">Halfmoon (180° Tail)</option>
+                    <option value="slender Siamese fighting fish (Betta splendens) Crowntail male with dramatic spiky needle-like ray-extended fins">Crowntail (Spiky Rays)</option>
+                    <option value="muscular short-fin Plakat Siamese fighting fish (Betta splendens) flaring its gill beard">Plakat (Short-Fin)</option>
+                    <option value="slender Galaxy Koi Siamese fighting fish (Betta splendens) with marbled iridescent metallic scales and flowing veil fins">Galaxy Koi</option>
+                    <option value="slender Dumbo Big Ear Siamese fighting fish (Betta splendens) with oversized ruffled white pectoral fins and long flowing tail">Dumbo Ear</option>
+                    <option value="slender Alien Hybrid Siamese fighting fish (Betta splendens) with iridescent metallic green-blue dragon scales">Alien Metallic</option>
                 </select>
             </div>
 
             <div class="control-row">
                 <label for="colorSelect">Color Morph</label>
                 <select id="colorSelect">
-                    <option value="iridescent royal blue body with vibrant mustard yellow fins">Mustard Gas (Blue &amp; Gold)</option>
+                    <option value="iridescent royal blue slender body with vibrant mustard yellow-gold silk fins">Mustard Gas (Blue &amp; Gold)</option>
                     <option value="velvet matte black body with metallic silver platinum dragon scales">Samurai Black &amp; Silver</option>
-                    <option value="deep crimson blood-red translucent fins with copper metallic sheen">Crimson Copper Red</option>
-                    <option value="pearl white platinum body with glowing cyan bioluminescent edges">Platinum Cyan Glow</option>
-                    <option value="multicolor koi orange, black, white, and electric turquoise patches">Candy Koi Marbled</option>
+                    <option value="deep crimson blood-red translucent veil fins with copper metallic sheen">Crimson Copper Red</option>
+                    <option value="pearl white platinum body with glowing cyan bioluminescent fin edges">Platinum Cyan Glow</option>
+                    <option value="multicolor koi orange, black, white, and electric turquoise marbled patches">Candy Koi Marbled</option>
                 </select>
             </div>
 
             <div class="control-row">
                 <label for="lightingSelect">Studio Lighting</label>
                 <select id="lightingSelect">
-                    <option value="pure pitch-black obsidian studio backdrop, dramatic rim lighting highlighting delicate fin membranes">Obsidian Black Studio</option>
-                    <option value="dark moody underwater aquascape background with subtle volumetric light rays and micro bubbles">Deep Aquarium Rays</option>
-                    <option value="ultra-clean backlit macro studio lighting showing translucent vein details inside fins">Translucent Backlit X-Ray</option>
+                    <option value="isolated against a pure pitch-black obsidian studio backdrop, dramatic rim lighting illuminating delicate fin membranes">Obsidian Black Studio</option>
+                    <option value="dark moody underwater aquascape background with subtle volumetric light rays and tiny rising micro bubbles">Deep Aquarium Rays</option>
+                    <option value="ultra-clean backlit macro studio lighting showing translucent vein structure inside the flowing fins">Translucent Backlit X-Ray</option>
                 </select>
             </div>
 
@@ -384,13 +457,12 @@
                 </select>
             </div>
 
-            <!-- Custom Prompt Override Box -->
             <div class="prompt-box-row">
                 <div class="prompt-header">
                     <label for="customPromptInput">Custom Prompt (Optional — Any Scene)</label>
                     <button type="button" class="clear-prompt-btn" onclick="clearCustomPrompt()">Clear</button>
                 </div>
-                <textarea id="customPromptInput" rows="2" oninput="updateModeIndicator()" placeholder="Leave empty for Betta presets, or describe any image you want to create..."></textarea>
+                <textarea id="customPromptInput" rows="2" oninput="updateModeIndicator()" placeholder="Leave empty for Betta presets, or type any custom scene..."></textarea>
             </div>
         </section>
 
@@ -401,12 +473,43 @@
         </div>
 
         <footer class="studio-footer">
-            Optical AI Engine • Engineered by <strong>Mr Safi</strong>
+            FLUX.1 Neural Engine • Engineered by <strong>Mr Safi</strong>
         </footer>
     </div>
 
     <script>
-        let currentImageUrl = "";
+        let currentBlobUrl = "";
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedKey = localStorage.getItem("betta_studio_api_key");
+            if (savedKey) {
+                document.getElementById("apiKeyInput").value = savedKey;
+                setKeyBadgeActive(true);
+                document.getElementById("statusLabel").innerText = "READY TO CAPTURE • TAP GENERATE";
+            }
+        });
+
+        function setKeyBadgeActive(isActive) {
+            const badge = document.getElementById("keyStatusBadge");
+            if (isActive) {
+                badge.innerText = "KEY SAVED";
+                badge.classList.add("active");
+            } else {
+                badge.innerText = "KEY REQUIRED";
+                badge.classList.remove("active");
+            }
+        }
+
+        function saveApiKey() {
+            const keyVal = document.getElementById("apiKeyInput").value.trim();
+            if (!keyVal) {
+                alert("Please paste your free Hugging Face (hf_...) or Pollinations token first.");
+                return;
+            }
+            localStorage.setItem("betta_studio_api_key", keyVal);
+            setKeyBadgeActive(true);
+            document.getElementById("statusLabel").innerText = "KEY SAVED • TAP GENERATE";
+        }
 
         function updateAspectLabel() {
             const ratio = document.getElementById("ratioSelect").value;
@@ -423,11 +526,9 @@
         function updateModeIndicator() {
             const customVal = document.getElementById("customPromptInput").value.trim();
             const lensLabel = document.getElementById("lensModeLabel");
-            if (customVal.length > 0) {
-                lensLabel.innerText = "Custom Prompt Mode • 8K RAW";
-            } else {
-                lensLabel.innerText = "100mm Macro • f/2.8 • 8K RAW";
-            }
+            lensLabel.innerText = customVal.length > 0
+                ? "Custom Scene Mode • FLUX.1 RAW"
+                : "Betta Splendens Macro • No Watermark";
         }
 
         function clearCustomPrompt() {
@@ -438,14 +539,14 @@
         function buildFinalPrompt() {
             const customPrompt = document.getElementById("customPromptInput").value.trim();
             if (customPrompt.length > 0) {
-                return `${customPrompt}, ultra-realistic 8K RAW photography, cinematic lighting, sharp focus, no text, no watermark`;
+                return `${customPrompt}, ultra-realistic 8K RAW photography, cinematic studio lighting, sharp focus`;
             }
 
             const variety = document.getElementById("varietySelect").value;
             const color = document.getElementById("colorSelect").value;
             const lighting = document.getElementById("lightingSelect").value;
 
-            return `Ultra-realistic National Geographic macro studio photograph of a single ${variety} with ${color}, suspended gracefully in crystal-clear water, ${lighting}, razor-sharp focus on glistening iridescent scales, gill plate, and delicate translucent fin rays, shot on 100mm macro lens f/2.8, 8K RAW photography, natural aquatic physics, no text, no watermark`;
+            return `Award-winning National Geographic macro wildlife photograph of a single ${variety} with ${color}, side-profile view suspended gracefully in crystal-clear water, ${lighting}, razor-sharp focus on glistening iridescent scales, gill plate, and delicate translucent fin rays, shot on 100mm macro lens f/2.8, photorealistic aquatic photography`;
         }
 
         function getDimensions(ratio) {
@@ -454,99 +555,26 @@
             return { width: 896, height: 1120 };
         }
 
-        function generateBettaPhoto() {
-            const btn = document.getElementById("generateBtn");
-            const recDot = document.getElementById("recDot");
-            const previewImg = document.getElementById("bettaPreview");
-            const placeholder = document.getElementById("placeholderState");
-            const statusLabel = document.getElementById("statusLabel");
-            const ratio = document.getElementById("ratioSelect").value;
+        async function fetchHuggingFaceImage(token, prompt, width, height) {
+            const endpoints = [
+                "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell",
+                "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-schnell"
+            ];
 
-            const prompt = buildFinalPrompt();
-            const { width, height } = getDimensions(ratio);
-            const seed = Math.floor(Math.random() * 9999999);
+            for (const url of endpoints) {
+                const res = await fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        inputs: prompt,
+                        parameters: { width, height }
+                    })
+                });
 
-            const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&seed=${seed}&nologo=true&model=flux`;
-
-            btn.disabled = true;
-            btn.innerText = "CAPTURING...";
-            recDot.classList.add("pulsing");
-            previewImg.classList.add("hidden");
-            placeholder.classList.remove("hidden");
-            statusLabel.innerText = "EXPOSING 8K SENSOR • PLEASE WAIT...";
-
-            const loader = new Image();
-            loader.onload = () => {
-                currentImageUrl = imageUrl;
-                previewImg.src = imageUrl;
-                placeholder.classList.add("hidden");
-                previewImg.classList.remove("hidden");
-
-                btn.disabled = false;
-                btn.innerText = "GENERATE";
-                recDot.classList.remove("pulsing");
-            };
-
-            loader.onerror = () => {
-                statusLabel.innerText = "SIGNAL BUSY • TAP GENERATE TO RETRY";
-                btn.disabled = false;
-                btn.innerText = "GENERATE";
-                recDot.classList.remove("pulsing");
-            };
-
-            loader.src = imageUrl;
-        }
-
-        async function downloadBettaImage() {
-            if (!currentImageUrl) {
-                alert("Please tap GENERATE first to capture an image!");
-                return;
-            }
-
-            const downloadBtn = document.getElementById("downloadBtn");
-            const originalText = downloadBtn.innerText;
-            downloadBtn.innerText = "⏳ Saving...";
-
-            try {
-                const response = await fetch(currentImageUrl);
-                const blob = await response.blob();
-                const blobUrl = URL.createObjectURL(blob);
-
-                const link = document.createElement("a");
-                link.href = blobUrl;
-                link.download = `Studio-MrSafi-${Date.now()}.jpg`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(blobUrl);
-            } catch (err) {
-                window.open(currentImageUrl, "_blank");
-            } finally {
-                downloadBtn.innerText = originalText;
-            }
-        }
-
-        function copyMotionPrompt() {
-            const customPrompt = document.getElementById("customPromptInput").value.trim();
-            let motionPrompt = "";
-
-            if (customPrompt.length > 0) {
-                motionPrompt = `Cinematic 60fps slow-motion video of ${customPrompt}, subtle camera push-in, realistic physics, volumetric lighting, photorealistic detail.`;
-            } else {
-                const varietyText = document.getElementById("varietySelect").selectedOptions[0].text;
-                const colorText = document.getElementById("colorSelect").selectedOptions[0].text;
-                motionPrompt = `Ultra slow-motion 60fps underwater macro video of this ${varietyText} (${colorText}), delicate silk fins rippling gracefully in gentle current, subtle gill breathing movement, floating micro-bubbles drifting upward, locked 100mm macro camera, cinematic rim lighting, photorealistic aquatic physics.`;
-            }
-
-            navigator.clipboard.writeText(motionPrompt).then(() => {
-                const copyBtn = document.getElementById("copyPromptBtn");
-                const oldText = copyBtn.innerText;
-                copyBtn.innerText = "✅ Copied!";
-                setTimeout(() => {
-                    copyBtn.innerText = oldText;
-                }, 1600);
-            });
-        }
-    </script>
-</body>
-                    </html>
+                if (res.ok) {
+                    return await res.blob();
+                }
+      
